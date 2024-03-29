@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('post_comment', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('postId');
-            $table->foreign('postId')->references('id')->on('post');
-            $table->unsignedBigInteger('parentId');
+            $table->foreign('postId')->references('id')->on('post')->onDelete('cascade');
+            $table->unsignedBigInteger('parentId')->references('id')->on('post_comment');
             $table->string('title', 100);
             $table->tinyText('published', 1);
             $table->dateTime('createdAt', precision: 0);

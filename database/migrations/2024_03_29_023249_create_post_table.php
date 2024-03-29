@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('post', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('authorId');
-            $table->foreign('authorId')->references('id')->on('users');
-            $table->unsignedBigInteger('parentId');
+            $table->foreign('authorId')->references('id')->on('users')->onDelete('cascade');;
+            $table->unsignedBigInteger('parentId')->references('id')->on('post');
             $table->string('title', 75);
             $table->string('metaTitle', 100);
             $table->string('slug', 100);

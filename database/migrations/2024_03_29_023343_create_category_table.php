@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('category', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('parentId');
+            $table->unsignedBigInteger('parentId')->references('id')->on('category');
             $table->string('title', 75);
             $table->string('metaTitle', 100);
             $table->string('slug', 100);
