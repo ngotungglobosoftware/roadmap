@@ -16,14 +16,20 @@ Route::get('/signup', function () {
 Route::post('/signup', function () {
     return view('front.signup');
 });
-Route::post('/user', [UserController::class, 'store']);
+// Route::post('/user', [UserController::class, 'store']);
 
 Route::prefix('admin')->group(function () {
     Route::get('{any}', function() {
         return view('admin.index');
     });
-   
+    Route::get('{any}/{id}', function() {
+        return view('admin.index');
+    });
+    Route::get('/', function() {
+        return view('admin.index');
+    });
 });
-Route::get('/api/{any}', function () {
-    die('api');
+Route::prefix('api')->group(function () {
+    // Route::get('/users', [UserController::class, 'list']);
+    Route::resource('users', UserController::class);
 });
