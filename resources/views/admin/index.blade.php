@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>React app</title>
     @viteReactRefresh
-    @vite('resources/js/admin/main.jsx')
+    @vite('resources/js/admin/main.jsx') 
+    @vite('resources/css/app.css')
 </head>
 <body>
     <div id="root"></div>
