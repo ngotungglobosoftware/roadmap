@@ -2,25 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ListUserRequest;
-use App\Http\Requests\StoreUserRequest;
-use App\Http\Requests\UpdateUserRequest;
-use App\Http\Resources\User as ResourcesUser;
-use App\Models\User;
+use App\Models\Post;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
-class UserController extends Controller
+class PostController extends Controller
 {
-    //
     public function index(Request $request)
     {
-        // User::factory()->count(30)->create();
         $limit = 1;
         $page = 2;
         $orderBy = "asc";
-        $users = User::orderBy('created_at', $orderBy)->paginate($limit, ['*'], 'page', $request->page);
+        $users = Post::orderBy('created_at', $orderBy)->paginate($limit, ['*'], 'page', $request->page);
         return $users;
     }
     public function show($id)
@@ -28,7 +20,7 @@ class UserController extends Controller
         $user = User::find($id);
         return $user;
     }
-    public function store(StoreUserRequest $request)
+    public function store(Request $request)
     {
         $validated = $request->validated();
         $user = new User();
@@ -43,7 +35,7 @@ class UserController extends Controller
         $user->save();
         return $user;
     }
-    public function update(UpdateUserRequest $request, $id)
+    public function update(Request $request, $id)
     {
         $validated = $request->validated();
         $user = User::find($id);

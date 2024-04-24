@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\TagController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,4 +35,7 @@ Route::prefix('admin')->group(function () {
 Route::prefix('api')->group(function () {
     // Route::get('/users', [UserController::class, 'list']);
     Route::resource('users', UserController::class);
+    Route::resource('posts', PostController::class);
+    Route::resource('categories', CategoryController::class);
+    Route::resource('tags', TagController::class);
 });
