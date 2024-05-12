@@ -10,7 +10,7 @@ class Category extends Model
     use HasFactory;
 
     protected $table = 'category';
-    
+
     protected $fillable = [
         'parentId',
         'title',
@@ -21,6 +21,6 @@ class Category extends Model
 
     public function posts()
     {
-        return $this->belongsToMany('Post', 'post_category', 'categoryId', 'postId');
+        return $this->belongsToMany(Post::class, 'post_category', 'categoryId', 'postId');
     }
 }

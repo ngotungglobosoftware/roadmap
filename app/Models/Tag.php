@@ -9,7 +9,7 @@ class Tag extends Model
 {
     use HasFactory;
 
-    protected $table = 'tags';
+    protected $table = 'tag';
 
     protected $fillable = [
         'title',
@@ -17,9 +17,9 @@ class Tag extends Model
         'slug',
         'content'
     ];
-    
+
     public function posts()
     {
-        return $this->belongsToMany('Post', 'post_category', 'tagId', 'postId');
+        return $this->belongsToMany(Post::class, 'post_tag', 'tagId', 'postId');
     }
 }

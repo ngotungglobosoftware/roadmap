@@ -33,9 +33,11 @@ Route::prefix('admin')->group(function () {
     });
 });
 Route::prefix('api')->group(function () {
-    // Route::get('/users', [UserController::class, 'list']);
     Route::resource('users', UserController::class);
     Route::resource('posts', PostController::class);
     Route::resource('categories', CategoryController::class);
     Route::resource('tags', TagController::class);
+});
+Route::get('/csrf-token', function() {
+    return response()->json(['csrf_token' => csrf_token()]);
 });

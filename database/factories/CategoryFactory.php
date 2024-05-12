@@ -1,6 +1,7 @@
 <?php
 
 namespace Database\Factories;
+
 use Illuminate\Support\Str;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -21,9 +22,18 @@ class CategoryFactory extends Factory
         $slug = Str::slug($title);
         return [
             'title' => $title,
+            'parentId' => NULL,
             'metaTitle' => fake()->title(),
             'slug' => $slug,
             'content' => fake()->text()
         ];
+    }
+    public function withParent($parentId)
+    {
+        return $this->state(function (array $attributes) use ($parentId) {
+            return [
+                'parentId' => $parentId,
+            ];
+        });
     }
 }
