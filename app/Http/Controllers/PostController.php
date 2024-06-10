@@ -69,6 +69,7 @@ class PostController extends Controller
             if ($validated['tag'] != '') {
                 //check tag and add
             }
+            die('ok');
             // $post->save();
             // return $post;
         } catch (ModelNotFoundException $e) {

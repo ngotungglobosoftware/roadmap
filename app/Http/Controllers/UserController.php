@@ -6,7 +6,8 @@ use App\Filters\ApiFilter;
 use App\Http\Requests\ListUserRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
-use App\Http\Resources\User as ResourcesUser;
+use App\Http\Resources\ResourceUser;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -28,22 +29,32 @@ class UserController extends Controller
     public function index(Request $request)
     {
 
-        $query = User::query();
-        if ($request->has('page') && is_numeric($request->input('page'))) $this->page = $request->has('page');
+        // $query = User::query();
+        // if ($request->has('page') && is_numeric($request->input('page'))) $this->page = $request->has('page');
+        // if ($request->has('query')) {
+        //     $q = $request->input('query');
+        //     $query->where('firstName', 'LIKE', '%' . $q . '%')
+        //         ->orWhere('middleName', 'LIKE', '%' . $q . '%')
+        //         ->orWhere('middleName', 'LIKE', '%' . $q . '%')
+        //         ->orWhere('email', 'LIKE', '%' . $q . '%');
+        // }
+
+        // $query->orderBy($this->sortColumn, $this->sortBy)->paginate((int)$this->limit, ['*'], 'page', (int)$this->page);
+
+        // $users = $query->with('posts')->get();
+
         if ($request->has('sortBy') && in_array($request->input('sortBy'), $this->sortParams)) $this->sortBy = $request->input('sortBy');
         if ($request->has('limit') && is_numeric($request->input('limit'))) $this->limit = $request->input('limit');
+        $users = User::all()->filter();
         if ($request->has('query')) {
             $q = $request->input('query');
-            $query->where('firstName', 'LIKE', '%' . $q . '%')
+            $users->where('firstName', 'LIKE', '%' . $q . '%')
                 ->orWhere('middleName', 'LIKE', '%' . $q . '%')
                 ->orWhere('middleName', 'LIKE', '%' . $q . '%')
                 ->orWhere('email', 'LIKE', '%' . $q . '%');
         }
-
-        $query->orderBy($this->sortColumn, $this->sortBy)->paginate((int)$this->limit, ['*'], 'page', (int)$this->page);
-
-        $users = $query->with('posts')->get();
-
+        $users->orderBy($this->sortBy)->paginate($this->limit);
+        return UserResource::collection($users);
         return response()->json($users);
     }
     public function show($id)
