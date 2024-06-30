@@ -29,7 +29,8 @@ class StorePostRequest extends FormRequest
             'content' => 'nullable',
             'summary' => 'nullable',
             'published' => 'required|in:0,1',
-            'tags' => 'nullable'
+            'tags' => 'nullable|array',
+            'categories' => 'nullable|array'
         ];
     }
 }

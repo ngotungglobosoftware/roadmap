@@ -26,7 +26,13 @@ class PostCollection extends ResourceCollection
             'last_page' => $this->lastPage(),
             'path' => $this->path(),
             'per_page' => $this->perPage(),
-            'total' => $this->total(),
+            'total' => $this->total()
         ];
+      
+    }
+
+    public function with($request)
+    {
+        return [];
     }
 }

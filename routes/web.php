@@ -22,22 +22,22 @@ Route::post('/signup', function () {
 // Route::post('/user', [UserController::class, 'store']);
 
 Route::prefix('admin')->group(function () {
-    Route::get('{any}', function() {
+    Route::get('{any}', function () {
         return view('admin.index');
     });
-    Route::get('{any}/{id}', function() {
+    Route::get('{any}/{id}', function () {
         return view('admin.index');
     });
-    Route::get('/', function() {
+    Route::get('/', function () {
         return view('admin.index');
     });
 });
-Route::prefix('api')->group(function () {
+Route::prefix('api')->middleware('throttle:60, 1')->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('posts', PostController::class);
     Route::resource('categories', CategoryController::class);
     Route::resource('tags', TagController::class);
 });
-Route::get('/csrf-token', function() {
+Route::get('/csrf-token', function () {
     return response()->json(['csrf_token' => csrf_token()]);
 });

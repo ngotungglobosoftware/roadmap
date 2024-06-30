@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCategoryRequest extends FormRequest
+class IndexPostRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +22,10 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|max:75',
-            'metaTitle' => 'required|max:100',
-            'slug' => 'nullable|max:100',
-            'content' => 'nullable'
+            'page' => 'nullable|integer',
+            'sortBy' => 'nullable|in:asc,desc',
+            'limit' => 'nullable|integer',
+            'query' => 'nullable|string',
         ];
     }
 }
