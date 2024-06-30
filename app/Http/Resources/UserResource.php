@@ -19,6 +19,7 @@ class UserResource extends JsonResource
             'firstName' => $this->firstName,
             'middleName' => $this->middleName,
             'lastName' => $this->lastName,
+            'posts' => PostResource::collection($this->posts),
             'created_at' => $this->created_at->format('d/m/Y'),
             'updated_at' => $this->updated_at->format('d/m/Y'),
         ];
