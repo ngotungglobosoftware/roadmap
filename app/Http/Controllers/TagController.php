@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\TagCollection;
+use App\Http\Resources\TagResource;
 use App\Models\Tag;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class TagController extends Controller
 {
@@ -20,19 +24,46 @@ class TagController extends Controller
     protected $sortParams = ['asc', 'desc'];
     public function index(Request $request)
     {
-        //
-        $query = Tag::query();
-        // dd($request->query());
-        if ($request->has('page') && is_numeric($request->input('page'))) $this->page = $request->has('page');
+        if ($request->has('page') && is_numeric($request->input('page'))) $this->page = $request->input('page');
         if ($request->has('sortBy') && in_array($request->input('sortBy'), $this->sortParams)) $this->sortBy = $request->input('sortBy');
         if ($request->has('limit') && is_numeric($request->input('limit'))) $this->limit = $request->input('limit');
-        if ($request->has('query')) {
-            $q = $request->input('query');
-            $query->where('title', 'LIKE', '%' . $q . '%')
-                ->orWhere('metaTitle', 'LIKE', '%' . $q . '%');
+
+        if (
+            !count($request->query()) || (
+                $this->sortColumn == 'created_at' &&
+                $this->sortBy == 'asc' &&
+                $this->q == '' &&
+                $this->limit == 10 &&
+                $this->page == 1
+            )
+        ) {
+
+            if (Cache::has('tags')) {
+
+                Log::info('Read Tags from cache');
+                $tagsCache = Cache::get('tags');
+                return new TagCollection($tagsCache);
+            } else {
+
+                Log::info('Save Tags cache');
+                // dd('vao day 11');
+                $tagsCache = Cache::rememberForever('tags',  function () {
+                    return Tag::query()->orderBy($this->sortColumn, $this->sortBy)->paginate((int)$this->limit, ['*'], 'page', (int)$this->page);
+                });
+                return new TagCollection($tagsCache);
+            }
+        } else {
+
+            Log::info('Get tags live');
+            $query = Tag::query();
+            if ($request->has('query')) {
+                $q = $request->input('query');
+                $query->where('title', 'LIKE', '%' . $q . '%')
+                    ->orWhere('metaTitle', 'LIKE', '%' . $q . '%');
+            }
+            $tags = $query->orderBy($this->sortColumn, $this->sortBy)->paginate((int)$this->limit, ['*'], 'page', (int)$this->page);
+            return new TagCollection($tags);
         }
-        $tags = $query->orderBy($this->sortColumn, $this->sortBy)->paginate((int)$this->limit, ['*'], 'page', (int)$this->page);
-        return new TagCollection($tags);
     }
 
     /**
@@ -49,6 +80,14 @@ class TagController extends Controller
     public function store(Request $request)
     {
         //
+        $tag  = new Tag();
+        $tag->title     = $request['title'];
+        $tag->metaTitle = $request['metaTitle'];
+        $tag->slug      = $request['slug'];
+        if (is_null($tag->slug)) $tag->slug = Str::slug($tag->title);
+        $tag->content   = $request['content'] ?? '';
+        $tag->save();
+        return new TagResource($tag);
     }
 
     /**
@@ -90,18 +129,5 @@ class TagController extends Controller
     public function destroy(string $id)
     {
         //
-        try {
-            if (Tag::findOrFail($id)->delete()) {
-                return response()->json([
-                    'error' => 0,
-                    'message' => 'Successful.'
-                ]);
-            }
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'error' => 1,
-                'message' => 'Tag not found.'
-            ], 404);
-        }
     }
 }

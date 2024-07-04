@@ -10,6 +10,7 @@ use App\Http\Resources\PostResource;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\PostCategory;
+use App\Models\PostMeta;
 use App\Models\PostTag;
 use App\Models\Tag;
 use App\Models\User;
@@ -118,7 +119,6 @@ class PostController extends Controller
         });
 
         return $data;
-
     }
     public function update(UpdatePostRequest $request, $id)
     {
@@ -192,12 +192,15 @@ class PostController extends Controller
     public function destroy($id)
     {
         try {
-            if (Post::findOrFail($id)->delete()) {
-                return response()->json([
-                    'error' => 0,
-                    'message' => 'Successful.'
-                ]);
-            }
+            DB::beginTransaction();
+            PostTag::where('postId', '=', (int)$id)->delete();
+            PostCategory::where('postId', '=', (int)$id)->delete();
+            Post::findOrFail($id)->delete();
+            DB::commit();
+            return response()->json([
+                'error' => 0,
+                'message' => 'Successful.'
+            ]);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'error' => 1,
