@@ -7,6 +7,7 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostCollection;
 use App\Http\Resources\PostResource;
+use App\Jobs\DeleteTag;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\PostCategory;
@@ -192,11 +193,14 @@ class PostController extends Controller
     public function destroy($id)
     {
         try {
+            $post = Post::findOrFail($id);
+            if (count($post->tags) > 0)   DeleteTag::dispatch($post->tags)->delay(now()->addMinutes(2));
             DB::beginTransaction();
             PostTag::where('postId', '=', (int)$id)->delete();
             PostCategory::where('postId', '=', (int)$id)->delete();
-            Post::findOrFail($id)->delete();
+            $post->delete();
             DB::commit();
+
             return response()->json([
                 'error' => 0,
                 'message' => 'Successful.'
