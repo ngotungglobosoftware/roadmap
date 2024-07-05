@@ -32,7 +32,7 @@ Route::prefix('admin')->group(function () {
         return view('admin.index');
     });
 });
-Route::prefix('api')->middleware('throttle:60, 1')->group(function () {
+Route::middleware(['throttle:api'])->prefix('api')->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('posts', PostController::class);
     Route::resource('categories', CategoryController::class);
